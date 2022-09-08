@@ -47,9 +47,10 @@ function generateUserToken(user) {
  * @param {Function} createPasswordReset
  * @param {Function} resetPassword
  * @param {Function} userMiddleware
+ * @param {Function} createUser
  * @return {{router: Router}}
  */
-function useAuth(User, AuthToken, createEmailConfirmation, createPasswordReset, resetPassword, userMiddleware) {
+function useAuth({User, AuthToken, createEmailConfirmation, createPasswordReset, resetPassword, userMiddleware, createUser}) {
 
     const router = Router();
 
@@ -59,39 +60,20 @@ function useAuth(User, AuthToken, createEmailConfirmation, createPasswordReset, 
             try {
                 const {login, email, password} = req.body;
 
-                const checkUserUnique = await User.findOne({
-                    where: {
-                        [Op.or]: [
-                            {login},
-                            {email}
-                        ]
+                let user;
+
+                try {
+                    user = await createUser({login, email, password})
+                } catch (err) {
+                    if (err.name === 'Create User Error') {
+                        err.name = 'Register Error';
+                        return res.status(400).json(err);
+                    } else  {
+                        throw err;
                     }
-                });
-
-                if (checkUserUnique) {
-
-                    const error = {name: 'ValidationError'};
-
-                    if (checkUserUnique.login === login) {
-                        error.message = 'Login already in use'
-                    } else if (!error.message && checkUserUnique.email === email) {
-                        error.message = 'Email already in use'
-                    }
-
-                    return res.status(400).json(error);
                 }
 
-                const user = User.build({
-                    email,
-                    login
-                });
-
-                const salt = await bcrypt.genSalt(parseInt(process.env.SALT));
-                user.password = await bcrypt.hash(password, salt);
-
-                await user.save();
-
-                await createEmailConfirmation(user);
+                createEmailConfirmation(user);
 
                 res.status(201).json({
                     message: 'Success register',
@@ -221,7 +203,7 @@ function useAuth(User, AuthToken, createEmailConfirmation, createPasswordReset, 
                     })
                 }
 
-                await createPasswordReset(user);
+                createPasswordReset(user);
 
                 res.json({
                     message: 'Reset password link on your email'

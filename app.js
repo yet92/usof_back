@@ -6,13 +6,15 @@ const logger = require('morgan');
 
 require('dotenv').config();
 const db = require('./db');
+const usersLib = require('./lib/users');
 const parseError = require('./lib/errorParser');
-const {ValidationError} = require("express-validation");
-const {user: userMiddleware} = require('./lib/middlewares');
-const emailConfirmation = require("./lib/emailConfirmation");
 const passwordReset = require('./lib/passwordReset');
+const {ValidationError} = require("express-validation");
+const {user: userMiddleware, useAvatarUpload, useAvatarData} = require('./lib/middlewares');
+const emailConfirmation = require("./lib/emailConfirmation");
 
 const useAuth = require('./routes/api/auth');
+const useUsers = require('./routes/api/users');
 const useVerifyEmail = require('./routes/api/verifyEmail');
 
 async function setup() {
@@ -26,11 +28,30 @@ async function setup() {
         database: process.env.DB_DATABASE
     });
 
-    const {confirmEmail, createEmailConfirmation} = emailConfirmation.init(ConfirmationToken, User);
-    const {resetPassword ,createPasswordReset} = passwordReset.init(PasswordResetToken, User);
+    const {avatarData: avatarDataMiddleware} = useAvatarData({User});
+    const {avatarUpload: avatarUploadMiddleware} = useAvatarUpload(path.join(__dirname, 'public', 'images', 'avatars'));
 
-    const {router: authAPIRouter} = useAuth(User, AuthToken, createEmailConfirmation, createPasswordReset, resetPassword, userMiddleware);
+    const {confirmEmail, createEmailConfirmation} = emailConfirmation.init(ConfirmationToken, User);
+    const {resetPassword, createPasswordReset} = passwordReset.init(PasswordResetToken, User);
+    const {createUser} = usersLib.init({User});
+
+    const {router: authAPIRouter} = useAuth({
+        User,
+        AuthToken,
+        createEmailConfirmation,
+        createPasswordReset,
+        resetPassword,
+        userMiddleware,
+        createUser
+    });
     const {router: verifyEmailAPIRouter} = useVerifyEmail(confirmEmail);
+    const {router: usersAPIRouter} = useUsers({
+        User,
+        createUser,
+        userMiddleware,
+        avatarDataMiddleware,
+        avatarUploadMiddleware
+    });
 
 
     // view engine setup
@@ -45,6 +66,7 @@ async function setup() {
 
     app.use('/api/auth', authAPIRouter);
     app.use('/api/verifyEmail', verifyEmailAPIRouter);
+    app.use('/api/users', usersAPIRouter);
 
     // catch 404 and forward to error handler
     app.use(function (req, res, next) {
