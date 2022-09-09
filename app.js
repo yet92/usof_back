@@ -28,7 +28,7 @@ async function setup() {
         database: process.env.DB_DATABASE
     });
 
-    const {avatarData: avatarDataMiddleware} = useAvatarData({User});
+    const {avatarData: avatarDataMiddleware} = useAvatarData({User, AuthToken});
     const {avatarUpload: avatarUploadMiddleware} = useAvatarUpload(path.join(__dirname, 'public', 'images', 'avatars'));
 
     const {confirmEmail, createEmailConfirmation} = emailConfirmation.init(ConfirmationToken, User);

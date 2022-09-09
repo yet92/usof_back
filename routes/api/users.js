@@ -105,15 +105,16 @@ function useUsers({User, userMiddleware, createUser, avatarDataMiddleware, avata
 
     router.patch('/avatar', [userMiddleware, avatarDataMiddleware, avatarUploadMiddleware.single('avatar')],
         async function (req, res, next) {
-            if (!req.user) {
-                return res.status(401).json({
-                    name: 'Users Error',
-                    message: 'Not Authorized'
+            if (!req.file) {
+                res.status(400).json({
+                    name: 'Upload Avatar Error',
+                    message: 'Avatar is required'
                 })
+            } else {
+                res.json({
+                    message: 'Avatar was updated'
+                });
             }
-
-            res.send('ok');
-
         })
 
     return {router}
