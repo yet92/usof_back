@@ -10,7 +10,14 @@ const usersLib = require('./lib/users');
 const parseError = require('./lib/errorParser');
 const passwordReset = require('./lib/passwordReset');
 const {ValidationError} = require("express-validation");
-const {user: userMiddleware, useAvatarUpload, useAvatarData, useCheckAuthTokenValidity} = require('./lib/middlewares');
+const {
+    useAdmin,
+    useAvatarData,
+    useAvatarUpload,
+    user: userMiddleware,
+    useCheckAuthTokenValidity,
+    onlyAdmins: onlyAdminsMiddleware,
+} = require('./lib/middlewares');
 const emailConfirmation = require("./lib/emailConfirmation");
 
 const useAuth = require('./routes/api/auth');
@@ -28,31 +35,34 @@ async function setup() {
         database: process.env.DB_DATABASE
     });
 
+    const {admin: adminMiddleware} = useAdmin({User});
     const {avatarData: avatarDataMiddleware} = useAvatarData({User, AuthToken});
     const {avatarUpload: avatarUploadMiddleware} = useAvatarUpload(path.join(__dirname, 'public', 'images', 'avatars'));
     const {checkAuthTokenValidity: checkAuthTokenValidityMiddleware} = useCheckAuthTokenValidity({AuthToken});
 
     const {confirmEmail, createEmailConfirmation} = emailConfirmation.init(ConfirmationToken, User);
-    const {resetPassword, createPasswordReset} = passwordReset.init(PasswordResetToken, User);
+    const {resetPassword, createPasswordReset} = passwordReset.init({PasswordResetToken, User, AuthToken});
     const {createUser} = usersLib.init({User});
 
     const {router: authAPIRouter} = useAuth({
         User,
-        createUser,
         AuthToken,
-        createEmailConfirmation,
-        createPasswordReset,
+        createUser,
         resetPassword,
         userMiddleware,
+        createPasswordReset,
+        createEmailConfirmation,
     });
     const {router: verifyEmailAPIRouter} = useVerifyEmail(confirmEmail);
     const {router: usersAPIRouter} = useUsers({
         User,
         createUser,
         userMiddleware,
+        adminMiddleware,
         avatarDataMiddleware,
+        onlyAdminsMiddleware,
         avatarUploadMiddleware,
-        checkAuthTokenValidityMiddleware
+        checkAuthTokenValidityMiddleware,
     });
 
 
