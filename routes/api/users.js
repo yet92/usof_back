@@ -18,9 +18,17 @@ const createUserValidation = {
  * @param {Function} createUser
  * @param {Function} avatarDataMiddleware
  * @param {Function} avatarUploadMiddleware
+ * @param {Function} checkAuthTokenValidityMiddleware
  * @return {{router: Router}}
  */
-function useUsers({User, userMiddleware, createUser, avatarDataMiddleware, avatarUploadMiddleware}) {
+function useUsers({
+                      User,
+                      userMiddleware,
+                      createUser,
+                      avatarDataMiddleware,
+                      avatarUploadMiddleware,
+                      checkAuthTokenValidityMiddleware
+                  }) {
 
     const router = Router();
 
@@ -60,7 +68,8 @@ function useUsers({User, userMiddleware, createUser, avatarDataMiddleware, avata
 
         })
 
-    router.post('/', [validate(createUserValidation), userMiddleware],
+    router.post('/',
+        [validate(createUserValidation), userMiddleware, checkAuthTokenValidityMiddleware],
         async function (req, res, next) {
 
             try {
@@ -103,7 +112,8 @@ function useUsers({User, userMiddleware, createUser, avatarDataMiddleware, avata
 
         })
 
-    router.patch('/avatar', [userMiddleware, avatarDataMiddleware, avatarUploadMiddleware.single('avatar')],
+    router.patch('/avatar',
+        [userMiddleware, checkAuthTokenValidityMiddleware, avatarDataMiddleware, avatarUploadMiddleware.single('avatar')],
         async function (req, res, next) {
             if (!req.file) {
                 res.status(400).json({

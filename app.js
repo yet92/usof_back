@@ -10,7 +10,7 @@ const usersLib = require('./lib/users');
 const parseError = require('./lib/errorParser');
 const passwordReset = require('./lib/passwordReset');
 const {ValidationError} = require("express-validation");
-const {user: userMiddleware, useAvatarUpload, useAvatarData} = require('./lib/middlewares');
+const {user: userMiddleware, useAvatarUpload, useAvatarData, useCheckAuthTokenValidity} = require('./lib/middlewares');
 const emailConfirmation = require("./lib/emailConfirmation");
 
 const useAuth = require('./routes/api/auth');
@@ -30,6 +30,7 @@ async function setup() {
 
     const {avatarData: avatarDataMiddleware} = useAvatarData({User, AuthToken});
     const {avatarUpload: avatarUploadMiddleware} = useAvatarUpload(path.join(__dirname, 'public', 'images', 'avatars'));
+    const {checkAuthTokenValidity: checkAuthTokenValidityMiddleware} = useCheckAuthTokenValidity({AuthToken});
 
     const {confirmEmail, createEmailConfirmation} = emailConfirmation.init(ConfirmationToken, User);
     const {resetPassword, createPasswordReset} = passwordReset.init(PasswordResetToken, User);
@@ -37,12 +38,12 @@ async function setup() {
 
     const {router: authAPIRouter} = useAuth({
         User,
+        createUser,
         AuthToken,
         createEmailConfirmation,
         createPasswordReset,
         resetPassword,
         userMiddleware,
-        createUser
     });
     const {router: verifyEmailAPIRouter} = useVerifyEmail(confirmEmail);
     const {router: usersAPIRouter} = useUsers({
@@ -50,7 +51,8 @@ async function setup() {
         createUser,
         userMiddleware,
         avatarDataMiddleware,
-        avatarUploadMiddleware
+        avatarUploadMiddleware,
+        checkAuthTokenValidityMiddleware
     });
 
 
