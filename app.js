@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 require('dotenv').config();
-const db = require('./db');
+const db = require('./repositories');
 const usersLib = require('./lib/users');
 const parseError = require('./lib/errorParser');
 const passwordReset = require('./lib/passwordReset');
@@ -19,6 +19,8 @@ const {
     onlyAdmins: onlyAdminsMiddleware,
 } = require('./lib/middlewares');
 const emailConfirmation = require("./lib/emailConfirmation");
+
+const {createDefaultUser, createDefaultAdminUser} = require('./lib/helpers/createDefaultUsers');
 
 const useAuth = require('./routes/api/auth');
 const useUsers = require('./routes/api/users');
@@ -35,6 +37,7 @@ async function setup() {
         database: process.env.DB_DATABASE
     });
 
+
     const {admin: adminMiddleware} = useAdmin({User});
     const {avatarData: avatarDataMiddleware} = useAvatarData({User, AuthToken});
     const {avatarUpload: avatarUploadMiddleware} = useAvatarUpload(path.join(__dirname, 'public', 'images', 'avatars'));
@@ -43,6 +46,9 @@ async function setup() {
     const {confirmEmail, createEmailConfirmation} = emailConfirmation.init(ConfirmationToken, User);
     const {resetPassword, createPasswordReset} = passwordReset.init({PasswordResetToken, User, AuthToken});
     const {createUser} = usersLib.init({User});
+
+    await createDefaultAdminUser({createUser});
+    await createDefaultUser({createUser});
 
     const {router: authAPIRouter} = useAuth({
         User,
