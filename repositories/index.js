@@ -36,6 +36,7 @@ exports.init = async ({
 
         await sequelize.sync({alter: true});
 
+
         console.log('Connection has been established successfully.');
 
         return {
