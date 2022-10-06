@@ -20,11 +20,16 @@ const {
 } = require('./lib/middlewares');
 const emailConfirmation = require("./lib/emailConfirmation");
 
-const {createDefaultUser, createDefaultAdminUser} = require('./lib/helpers/createDefaultUsers');
+const {createDefaultUser, createDefaultAdminUser} = require('./lib/helpers/defaultDataCreation/createDefaultUsers');
+const {createDefaultCategories} = require('./lib/helpers/defaultDataCreation/createDefaultCategories');
+
+const {PostsService} = require('./lib/services');
 
 const useAuth = require('./routes/api/auth');
 const useUsers = require('./routes/api/users');
 const useVerifyEmail = require('./routes/api/verifyEmail');
+const PostsAPI = require('./routes/api/posts');
+const {RecordNotFound} = require("./lib/helpers/errors");
 
 async function setup() {
     const app = express();
@@ -49,6 +54,7 @@ async function setup() {
 
     await createDefaultAdminUser({createUser});
     await createDefaultUser({createUser});
+    // await createDefaultCategories(Category);
 
     const {router: authAPIRouter} = useAuth({
         User,
@@ -71,6 +77,12 @@ async function setup() {
         checkAuthTokenValidityMiddleware,
     });
 
+    const postsService = new PostsService({Post, Comment, Like, Category});
+    const postsAPI = new PostsAPI(postsService, {
+        user: userMiddleware,
+        admin: adminMiddleware,
+        checkAuthValidity: checkAuthTokenValidityMiddleware
+    });
 
     // view engine setup
     app.set('views', path.join(__dirname, 'views'));
@@ -85,6 +97,7 @@ async function setup() {
     app.use('/api/auth', authAPIRouter);
     app.use('/api/verifyEmail', verifyEmailAPIRouter);
     app.use('/api/users', usersAPIRouter);
+    app.use('/api/posts', postsAPI.router);
 
     // catch 404 and forward to error handler
     app.use(function (req, res, next) {
@@ -97,6 +110,12 @@ async function setup() {
         if (err instanceof ValidationError) {
             const error = parseError(err);
             return res.status(err.statusCode).json(error);
+        }
+
+        if (err instanceof RecordNotFound) {
+            return res.status(404).json({
+                message: err.message
+            })
         }
 
         // set locals, only providing error in development

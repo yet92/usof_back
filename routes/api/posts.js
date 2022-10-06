@@ -27,7 +27,7 @@ class PostsAPI {
             async (req, res, next) => {
 
                 const id = req.params.id;
-                const userRole = req.isAdmin ? 'admin' : 'user';
+                const userRole = req.user?.isAdmin ? 'admin' : 'user';
 
                 try {
                     res.json({
@@ -50,7 +50,7 @@ class PostsAPI {
             admin,
             async (req, res, next) => {
                 const id = req.params.id;
-                const userRole = req.isAdmin ? 'admin' : 'user';
+                const userRole = req.user?.isAdmin ? 'admin' : 'user';
 
                 try {
                     res.json({
@@ -73,12 +73,12 @@ class PostsAPI {
             admin,
             async (req, res, next) => {
                 const id = req.params.id;
-                const userRole = req.isAdmin ? 'admin' : 'user';
+                const userRole = req.user?.isAdmin ? 'admin' : 'user';
 
                 try {
 
                     res.json({
-                        comments: await this.postsService.getCategories(
+                        categories: await this.postsService.getCategories(
                             id,
                             userRole,
                             req.user?.id || -1,
@@ -97,7 +97,7 @@ class PostsAPI {
             async (req, res, next) => {
 
                 const id = req.params.id;
-                const userRole = req.isAdmin ? 'admin' : 'user';
+                const userRole = req.user?.isAdmin ? 'admin' : 'user';
 
                 try {
 
@@ -191,7 +191,7 @@ class PostsAPI {
 
                     await this.postsService.updatePost(
                         id,
-                        req.user.id,
+                        req.user?.id,
                         {
                             title,
                             content,
@@ -255,7 +255,7 @@ class PostsAPI {
             async (req, res, next) => {
 
                 const id = req.params.id;
-                const userRole = req.isAdmin ? 'admin' : 'user';
+                const userRole = req.user?.isAdmin ? 'admin' : 'user';
 
                 try {
 
@@ -275,12 +275,12 @@ class PostsAPI {
 
     async getPosts(req, res, next) {
         const page = req.query.page || 0;
-        const userRole = req.isAdmin ? 'admin' : 'user';
+        const userRole = req.user?.isAdmin ? 'admin' : 'user';
 
         try {
             res.json(
                 {
-                    posts: await this.postsService.getAll(Number(page), userRole, req.user?.id || -1)
+                    posts: await this.postsService.getAll(Number(page), userRole, req.user?.id)
                 }
             )
         } catch (err) {
@@ -290,3 +290,5 @@ class PostsAPI {
 
 
 }
+
+module.exports = PostsAPI;
