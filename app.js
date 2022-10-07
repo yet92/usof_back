@@ -29,7 +29,7 @@ const useAuth = require('./routes/api/auth');
 const useUsers = require('./routes/api/users');
 const useVerifyEmail = require('./routes/api/verifyEmail');
 const PostsAPI = require('./routes/api/posts');
-const {RecordNotFound} = require("./lib/helpers/errors");
+const {RecordNotFound, NotEnoughRights} = require("./lib/helpers/errors");
 const {logAsJSON} = require("./lib/debug");
 
 async function setup() {
@@ -115,6 +115,12 @@ async function setup() {
 
         if (err instanceof RecordNotFound) {
             return res.status(404).json({
+                message: err.message
+            })
+        }
+
+        if (err instanceof NotEnoughRights) {
+            return res.status(err.statusCode).json({
                 message: err.message
             })
         }
