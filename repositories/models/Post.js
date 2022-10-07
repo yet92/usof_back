@@ -60,7 +60,7 @@ module.exports = (sequelize, Category, User) => {
     const Post_Categories = sequelize.define('Post_Categories', {}, {timestamps: false});
 
     Post.belongsToMany(Category, {through: Post_Categories, as: "categories"});
-    Category.belongsToMany(Post, {through: Post_Categories});
+    Category.belongsToMany(Post, {through: Post_Categories, as: "posts"});
 
 
 
