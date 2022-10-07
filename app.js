@@ -30,6 +30,7 @@ const useUsers = require('./routes/api/users');
 const useVerifyEmail = require('./routes/api/verifyEmail');
 const PostsAPI = require('./routes/api/posts');
 const {RecordNotFound} = require("./lib/helpers/errors");
+const {logAsJSON} = require("./lib/debug");
 
 async function setup() {
     const app = express();

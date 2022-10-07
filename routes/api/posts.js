@@ -173,6 +173,10 @@ class PostsAPI {
                         likeType
                     )
 
+                    res.status(201).json({
+                        message: 'Like added'
+                    })
+
                 } catch (err) {
                     next(err);
                 }

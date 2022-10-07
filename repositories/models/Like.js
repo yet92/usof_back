@@ -11,7 +11,7 @@ module.exports = (sequelize, User, Post, Comment) => {
 
     class Like extends Model {
 
-        async updateUserRating() {
+        async updateUserRating(delta) {
             let author = null;
             let likedObj = null;
             if (this.post_id) {
@@ -20,10 +20,9 @@ module.exports = (sequelize, User, Post, Comment) => {
                 likedObj = await Comment.findBYPk(this.comment_id);
             }
             if (likedObj) {
-                console.log(likedObj.toJSON());
                 author = await User.findByPk(likedObj.author_id);
                 if (author) {
-                    author.rating += this.type === 'like' ? 1 : -1;
+                    author.rating += delta;
                     await author.save();
                 }
 
