@@ -62,6 +62,8 @@ module.exports = (sequelize, Category, User) => {
     Post.belongsToMany(Category, {through: Post_Categories, as: "categories"});
     Category.belongsToMany(Post, {through: Post_Categories});
 
+
+
     return {Post, Post_Categories};
 
 }

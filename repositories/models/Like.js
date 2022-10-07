@@ -48,17 +48,29 @@ module.exports = (sequelize, User, Post, Comment) => {
 
     Like.belongsTo(Post, {
         foreignKey: 'post_id',
-        as: 'post'
+        as: 'post',
+        onDelete: 'cascade'
     });
 
     Like.belongsTo(Comment, {
         foreignKey: 'comment_id',
-        as: 'comment'
+        as: 'comment',
+        onDelete: 'cascade'
     });
 
     Like.belongsTo(User, {
         foreignKey: 'author_id',
-        as: 'author'
+        as: 'author',
+        onDelete: 'cascade'
+    });
+
+    Like.beforeDestroy(async (instance) => {
+        await instance.updateUserRating(instance.type === 'like' ? -1 : 1);
+    });
+
+    Like.beforeBulkDestroy(async () => {
+
+            await instance.updateUserRating(instance.type === 'like' ? -1 : 1);
     });
 
     return {Like}

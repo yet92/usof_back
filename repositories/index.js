@@ -34,6 +34,18 @@ exports.init = async ({
         const {AuthToken} = require('./models/AuthToken')(sequelize, User);
         const {PasswordResetToken} = require('./models/PasswordResetToken')(sequelize, User);
 
+        Post.beforeDestroy(async (instance) => {
+            const likes = await Like.findAll({
+                where: {
+                    post_id: instance.id
+                }
+            });
+
+            for (const like of likes) {
+                await like.destroy();
+            }
+        });
+
         await sequelize.sync({alter: true});
 
 
