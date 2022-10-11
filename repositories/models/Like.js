@@ -17,7 +17,7 @@ module.exports = (sequelize, User, Post, Comment) => {
             if (this.post_id) {
                 likedObj = await Post.findByPk(this.post_id);
             } else if (this.comment_id) {
-                likedObj = await Comment.findBYPk(this.comment_id);
+                likedObj = await Comment.findByPk(this.comment_id);
             }
             if (likedObj) {
                 author = await User.findByPk(likedObj.author_id);
