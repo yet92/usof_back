@@ -122,10 +122,11 @@ class PostsAPI {
                 const content = req.body.content;
 
                 try {
-                    await this.postsService.addComment(id, req.user?.id, content)
+                    const commentId = await this.postsService.addComment(id, req.user?.id, content)
 
                     res.status(201).json({
-                        message: 'Comment created'
+                        message: 'Comment created',
+                        id: commentId
                     })
                 } catch (err) {
                     next(err);
@@ -142,13 +143,14 @@ class PostsAPI {
 
                 try {
 
-                    await this.postsService.createPost(
+                    const postId = await this.postsService.createPost(
                         req.user?.id,
                         {title, content, categoryIds}
                     )
 
                     res.status(201).json({
-                        message: 'Post created'
+                        message: 'Post created',
+                        id: postId
                     })
 
                 } catch (err) {
@@ -167,14 +169,15 @@ class PostsAPI {
 
                 try {
 
-                    await this.postsService.addLike(
+                    const likeId = await this.postsService.addLike(
                         id,
                         req.user?.id,
                         likeType
                     )
 
                     res.status(201).json({
-                        message: 'Like added'
+                        message: 'Like added',
+                        id: likeId
                     })
 
                 } catch (err) {
