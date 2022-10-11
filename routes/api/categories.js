@@ -4,7 +4,7 @@ class CategoriesAPI {
 
     /**
      *
-     * @param {import('../../lib/services/CategoriesService')} categoriesService
+     * @param {import('../../lib/services').CategoriesService} categoriesService
      * @param user
      * @param checkAuthValidity
      * @param admin
@@ -53,7 +53,7 @@ class CategoriesAPI {
                     res.json({
                         posts: await this.categoriesService.getPostsOf(
                             req.params.id,
-                            req?.user.isAdmin ? 'admin' : 'user',
+                            req.user?.isAdmin ? 'admin' : 'user',
                             req.user?.id
                         )
                     })
@@ -140,3 +140,5 @@ class CategoriesAPI {
     }
 
 }
+
+module.exports = CategoriesAPI;

@@ -23,13 +23,14 @@ const emailConfirmation = require("./lib/emailConfirmation");
 const {createDefaultUser, createDefaultAdminUser} = require('./lib/helpers/defaultDataCreation/createDefaultUsers');
 const {createDefaultCategories} = require('./lib/helpers/defaultDataCreation/createDefaultCategories');
 
-const {PostsService} = require('./lib/services');
+const {PostsService, CategoriesService} = require('./lib/services');
 
 const useAuth = require('./routes/api/auth');
 const useUsers = require('./routes/api/users');
 const useVerifyEmail = require('./routes/api/verifyEmail');
 const PostsAPI = require('./routes/api/posts');
-const {RecordNotFound, NotEnoughRights} = require("./lib/helpers/errors");
+const CategoriesAPI = require('./routes/api/categories');
+const {RecordNotFound, NotEnoughRights, MustBeUnique} = require("./lib/helpers/errors");
 const {logAsJSON} = require("./lib/debug");
 
 async function setup() {
@@ -85,6 +86,13 @@ async function setup() {
         checkAuthValidity: checkAuthTokenValidityMiddleware
     });
 
+    const categoriesService = new CategoriesService({Category});
+    const categoriesAPI = new CategoriesAPI(categoriesService,{
+        user: userMiddleware,
+        checkAuthValidity: checkAuthTokenValidityMiddleware,
+        admin: adminMiddleware
+    });
+
     // view engine setup
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'ejs');
@@ -99,6 +107,7 @@ async function setup() {
     app.use('/api/verifyEmail', verifyEmailAPIRouter);
     app.use('/api/users', usersAPIRouter);
     app.use('/api/posts', postsAPI.router);
+    app.use('/api/categories', categoriesAPI.router);
 
     // catch 404 and forward to error handler
     app.use(function (req, res, next) {
@@ -121,6 +130,12 @@ async function setup() {
 
         if (err instanceof NotEnoughRights) {
             return res.status(err.statusCode).json({
+                message: err.message
+            })
+        }
+
+        if (err instanceof MustBeUnique) {
+            return  res.status(err.statusCode).json({
                 message: err.message
             })
         }
