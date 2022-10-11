@@ -127,6 +127,13 @@ function useUsers({
                     message: 'Avatar is required'
                 })
             } else {
+
+                const user = await User.findByPk(req.user.id);
+
+                user.profilePicture = req.avatarFileName;
+
+                await user.save();
+
                 res.json({
                     message: 'Avatar was updated'
                 });
