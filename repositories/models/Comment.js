@@ -35,7 +35,7 @@ module.exports = (sequelize, User, Post) => {
     const Post_Comments = sequelize.define('Post_Comments', {}, {timestamps: false});
 
     Post.belongsToMany(Comment, {through: Post_Comments, as: 'comments'});
-    Comment.belongsToMany(Post, {through: Post_Comments});
+    Comment.belongsToMany(Post, {through: Post_Comments, as: 'post'});
 
     return {Comment, Post_Comments}
 
