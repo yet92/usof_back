@@ -45,7 +45,7 @@ module.exports = (sequelize, User, Post) => {
     Post.belongsToMany(Comment, {through: Post_Comments, as: 'comments'});
     Comment.belongsToMany(Post, {through: Post_Comments, as: 'posts'});
 
-    Comment.belongsToMany(Comment, {as: 'selfComments', through: 'Comment_Comments'});
+    Comment.belongsToMany(Comment, {as: 'selfComments', through: 'Comment_Comments', timestamps: false});
 
     return {Comment, Post_Comments}
 
