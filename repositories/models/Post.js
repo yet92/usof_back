@@ -9,6 +9,18 @@ const {Sequelize, DataTypes, Model} = require('sequelize');
 module.exports = (sequelize, Category, User) => {
 
     class Post extends Model {
+
+        async toggleStatus() {
+            if (this.status === 'inactive') {
+                this.status = 'active';
+                this.publishDate = Sequelize.fn('now')
+            } else {
+                this.status = 'inactive';
+            }
+
+            await this.save();
+
+        }
     }
 
     Post.init({
@@ -27,7 +39,8 @@ module.exports = (sequelize, Category, User) => {
 
             publishDate: {
                 type: DataTypes.DATE,
-                field: 'publish_date'
+                field: 'publish_date',
+                defaultValue: Sequelize.fn('now')
             },
 
             status: {
