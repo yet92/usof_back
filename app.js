@@ -23,13 +23,14 @@ const emailConfirmation = require("./lib/emailConfirmation");
 const {createDefaultUser, createDefaultAdminUser} = require('./lib/helpers/defaultDataCreation/createDefaultUsers');
 const {createDefaultCategories} = require('./lib/helpers/defaultDataCreation/createDefaultCategories');
 
-const {PostsService, CategoriesService} = require('./lib/services');
+const {PostsService, CategoriesService, CommentsService} = require('./lib/services');
 
 const useAuth = require('./routes/api/auth');
 const useUsers = require('./routes/api/users');
 const useVerifyEmail = require('./routes/api/verifyEmail');
 const PostsAPI = require('./routes/api/posts');
 const CategoriesAPI = require('./routes/api/categories');
+const CommentsAPI = require('./routes/api/comments');
 const {RecordNotFound, NotEnoughRights, MustBeUnique} = require("./lib/helpers/errors");
 const {logAsJSON} = require("./lib/debug");
 
@@ -93,6 +94,13 @@ async function setup() {
         admin: adminMiddleware
     });
 
+    const commentsService = new CommentsService(Comment, Like);
+    const commentsAPI =  new CommentsAPI(commentsService, {
+        user: userMiddleware,
+        checkAuthValidity: checkAuthTokenValidityMiddleware,
+        admin: adminMiddleware
+    });
+
     // view engine setup
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'ejs');
@@ -108,6 +116,7 @@ async function setup() {
     app.use('/api/users', usersAPIRouter);
     app.use('/api/posts', postsAPI.router);
     app.use('/api/categories', categoriesAPI.router);
+    app.use('/api/comments', commentsAPI.router);
 
     // catch 404 and forward to error handler
     app.use(function (req, res, next) {
