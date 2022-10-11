@@ -87,10 +87,11 @@ class CommentsAPI {
 
                     const userRole = req.user && (req.user.isAdmin ? 'admin' : 'user');
 
-                    await this.commentsService.addLike(req.params.id, req.body.likeType, userRole, req.user?.id);
+                    const likeId = await this.commentsService.addLike(req.params.id, req.body.likeType, userRole, req.user?.id);
 
-                    res.json({
-                        message: 'Like added'
+                    res.status(201).json({
+                        message: 'Like added',
+                        id: likeId
                     })
 
                 } catch (err) {
