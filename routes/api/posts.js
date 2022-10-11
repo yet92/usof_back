@@ -279,12 +279,13 @@ class PostsAPI {
 
     async getPosts(req, res, next) {
         const page = req.query.page || 0;
+        const sort = req.query.sort || 'likes'
         const userRole = req.user?.isAdmin ? 'admin' : 'user';
 
         try {
             res.json(
                 {
-                    posts: await this.postsService.getAll(Number(page), userRole, req.user?.id)
+                    posts: await this.postsService.getAll(Number(page), sort, userRole, req.user?.id)
                 }
             )
         } catch (err) {
