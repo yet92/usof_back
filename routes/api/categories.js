@@ -68,7 +68,7 @@ class CategoriesAPI {
             admin,
             async (req, res, next) => {
                 try {
-                    await this.categoriesService.createCategory(
+                    const categoryId = await this.categoriesService.createCategory(
                         req.user?.isAdmin ? 'admin' : 'user',
                         req.user?.id,
                         {
@@ -78,7 +78,8 @@ class CategoriesAPI {
                     )
 
                     res.status(201).json({
-                        message: 'Category created'
+                        message: 'Category created',
+                        id: categoryId
                     });
 
                 } catch (err) {
