@@ -46,6 +46,18 @@ exports.init = async ({
             }
         });
 
+        Comment.beforeDestroy(async (instance) => {
+            const likes = await Like.findAll({
+                where: {
+                    comment_id: instance.id
+                }
+            });
+
+            for (const like of likes) {
+                await like.destroy();
+            }
+        });
+
         await sequelize.sync({alter: true});
 
 
