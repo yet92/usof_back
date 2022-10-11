@@ -45,8 +45,30 @@ class CommentsAPI {
 
                     const likes = await this.commentsService.getLikes(req.params.id, userRole, req.user?.id);
 
-                    res.json({
+                    res.status(201).json({
                         likes
+                    })
+
+                } catch (err) {
+                    next(err);
+                }
+
+            })
+
+        this.router.get('/:id/comments',
+            user,
+            checkAuthValidity,
+            admin,
+            async (req, res, next) => {
+
+                try {
+
+                    const userRole = req.user && (req.user.isAdmin ? 'admin' : 'user');
+
+                    const comments = await this.commentsService.getComments(req.params.id, userRole, req.user?.id);
+
+                    res.json({
+                        comments
                     })
 
                 } catch (err) {
@@ -132,6 +154,28 @@ class CommentsAPI {
                 }
 
             })
+
+        this.router.post('/:id/comments',
+            user,
+            checkAuthValidity,
+            admin,
+            async (req, res, next) => {
+                try {
+
+                    const newCommentId = await this.commentsService.addComment(req.params.id, req.user?.id, {
+                        content: req.body.content
+                    })
+
+                    res.status(201).json({
+                        message: 'Comment created',
+                        id: newCommentId
+                    })
+
+                } catch (err) {
+                    next(err);
+                }
+            })
+
     }
 
 }

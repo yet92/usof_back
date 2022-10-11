@@ -23,7 +23,15 @@ module.exports = (sequelize, User, Post) => {
         content: {
             type: DataTypes.TEXT,
             notNull: true
-        }
+        },
+
+        status: {
+            type: DataTypes.STRING,
+            validate: {
+                isIn: [['active', 'inactive']]
+            },
+            defaultValue: 'active'
+        },
     }, {sequelize, modelName: 'Comment', createdAt: 'publishDate'})
 
 
@@ -36,6 +44,8 @@ module.exports = (sequelize, User, Post) => {
 
     Post.belongsToMany(Comment, {through: Post_Comments, as: 'comments'});
     Comment.belongsToMany(Post, {through: Post_Comments, as: 'posts'});
+
+    Comment.belongsToMany(Comment, {as: 'selfComments', through: 'Comment_Comments'});
 
     return {Comment, Post_Comments}
 
