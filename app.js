@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const cors = require('cors');
 
 require('dotenv').config();
 const db = require('./repositories');
@@ -36,6 +37,7 @@ const {logAsJSON} = require("./lib/debug");
 
 async function setup() {
     const app = express();
+
 
     const {User, Post, Comment, Like, Category, ConfirmationToken, AuthToken, PasswordResetToken} = await db.init({
         host: process.env.DB_HOST,
@@ -110,6 +112,8 @@ async function setup() {
     app.use(express.urlencoded({extended: false}));
     app.use(cookieParser());
     app.use(express.static(path.join(__dirname, 'public')));
+
+    app.use(cors());
 
     app.use('/api/auth', authAPIRouter);
     app.use('/api/verifyEmail', verifyEmailAPIRouter);
