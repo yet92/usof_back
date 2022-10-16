@@ -64,7 +64,7 @@ exports.init = async ({
         console.log('Connection has been established successfully.');
 
         return {
-            User, Category, Post, Post_Categories, Comment, Post_Comments, Like, ConfirmationToken, AuthToken, PasswordResetToken, disconnect
+            User, Category, Post, Post_Categories, Comment, Post_Comments, Like, ConfirmationToken, AuthToken, PasswordResetToken, disconnect, sequelize
         };
 
     } catch (error) {

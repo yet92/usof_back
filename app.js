@@ -39,7 +39,7 @@ async function setup() {
     const app = express();
 
 
-    const {User, Post, Comment, Like, Category, ConfirmationToken, AuthToken, PasswordResetToken} = await db.init({
+    const {User, Post, Comment, Like, Category, ConfirmationToken, AuthToken, PasswordResetToken, sequelize} = await db.init({
         host: process.env.DB_HOST,
         port: parseInt(process.env.DB_PORT),
         user: process.env.DB_USER,
@@ -82,7 +82,7 @@ async function setup() {
         checkAuthTokenValidityMiddleware,
     });
 
-    const postsService = new PostsService({Post, Comment, Like, Category});
+    const postsService = new PostsService({Post, Comment, Like, Category, sequelize});
     const postsAPI = new PostsAPI(postsService, {
         user: userMiddleware,
         admin: adminMiddleware,
