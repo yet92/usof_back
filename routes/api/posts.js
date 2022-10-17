@@ -327,14 +327,17 @@ class PostsAPI {
         const sort = req.query.sort || "likes";
         const userRole = req.user?.isAdmin ? "admin" : "user";
 
+        const {rows: posts, count} = await this.postsService.getAll(
+            Number(page),
+            sort,
+            userRole,
+            req.user?.id
+        );
+
         try {
             res.json({
-                posts: await this.postsService.getAll(
-                    Number(page),
-                    sort,
-                    userRole,
-                    req.user?.id
-                ),
+                posts,
+                count
             });
         } catch (err) {
             next(err);
