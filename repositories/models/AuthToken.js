@@ -1,4 +1,4 @@
-const {Sequelize, DataTypes, Model} = require('sequelize');
+const { Sequelize, DataTypes, Model } = require("sequelize");
 
 /**
  *
@@ -6,27 +6,25 @@ const {Sequelize, DataTypes, Model} = require('sequelize');
  * @param {typeof Model} User
  */
 module.exports = (sequelize, User) => {
+    class AuthToken extends Model {}
 
-    class AuthToken extends Model {
-    }
-
-    AuthToken.init({
+    AuthToken.init(
+        {
             token: {
                 type: DataTypes.STRING,
-                notNull: true
-            }
+                notNull: true,
+            },
         },
         {
             sequelize,
-            modelName: 'Auth_Token',
-        });
+            modelName: "Auth_Token",
+        }
+    );
 
     AuthToken.belongsTo(User, {
-        foreignKey: 'user_id',
-        as: 'user'
+        foreignKey: "user_id",
+        as: "user",
     });
 
-
-    return {AuthToken};
-
-}
+    return { AuthToken };
+};

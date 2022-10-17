@@ -1,4 +1,4 @@
-const {Model, DataTypes} = require('sequelize');
+const { Model, DataTypes } = require("sequelize");
 
 /**
  *
@@ -7,46 +7,52 @@ const {Model, DataTypes} = require('sequelize');
  * @param {typeof Model} Post
  */
 module.exports = (sequelize, User, Post) => {
+    class Comment extends Model {}
 
-    class Comment extends Model {
-    }
-
-    Comment.init({
-
-        id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            unique: true,
-            primaryKey: true,
-        },
-
-        content: {
-            type: DataTypes.TEXT,
-            notNull: true
-        },
-
-        status: {
-            type: DataTypes.STRING,
-            validate: {
-                isIn: [['active', 'inactive']]
+    Comment.init(
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                unique: true,
+                primaryKey: true,
             },
-            defaultValue: 'active'
-        },
-    }, {sequelize, modelName: 'Comment', createdAt: 'publishDate'})
 
+            content: {
+                type: DataTypes.TEXT,
+                notNull: true,
+            },
+
+            status: {
+                type: DataTypes.STRING,
+                validate: {
+                    isIn: [["active", "inactive"]],
+                },
+                defaultValue: "active",
+            },
+        },
+        { sequelize, modelName: "Comment", createdAt: "publishDate" }
+    );
 
     Comment.belongsTo(User, {
-        foreignKey: 'author_id',
-        as: 'author'
+        foreignKey: "author_id",
+        as: "author",
     });
 
-    const Post_Comments = sequelize.define('Post_Comments', {}, {timestamps: false});
+    const Post_Comments = sequelize.define(
+        "Post_Comments",
+        {},
+        { timestamps: false }
+    );
 
-    Post.belongsToMany(Comment, {through: Post_Comments, as: 'comments'});
-    Comment.belongsToMany(Post, {through: Post_Comments, as: 'posts'});
+    Post.belongsToMany(Comment, { through: Post_Comments, as: "comments" });
+    Comment.belongsToMany(Post, { through: Post_Comments, as: "posts" });
 
-    Comment.belongsToMany(Comment, {as: 'selfComments', through: 'Comment_Comments', timestamps: false});
+    Comment.belongsToMany(Comment, {
+        as: "selfComments",
+        through: "Comment_Comments",
+        timestamps: false,
+    });
 
-    return {Comment, Post_Comments}
-
-}
+    return { Comment, Post_Comments };
+};

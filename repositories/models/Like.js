@@ -1,4 +1,4 @@
-const {Model, DataTypes} = require('sequelize');
+const { Model, DataTypes } = require("sequelize");
 
 /**
  *
@@ -8,9 +8,7 @@ const {Model, DataTypes} = require('sequelize');
  * @param {typeof Model} Comment
  */
 module.exports = (sequelize, User, Post, Comment) => {
-
     class Like extends Model {
-
         async updateUserRating(delta) {
             let author = null;
             let likedObj = null;
@@ -25,54 +23,51 @@ module.exports = (sequelize, User, Post, Comment) => {
                     author.rating += delta;
                     await author.save();
                 }
-
             }
         }
-
     }
 
-    Like.init({
+    Like.init(
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                unique: true,
+                primaryKey: true,
+            },
 
-        id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            unique: true,
-            primaryKey: true,
+            type: {
+                type: DataTypes.ENUM("like", "dislike"),
+            },
         },
-
-        type: {
-            type: DataTypes.ENUM('like', 'dislike'),
-        }
-
-    }, {sequelize, modelName: 'Like', createdAt: 'publishDate'})
+        { sequelize, modelName: "Like", createdAt: "publishDate" }
+    );
 
     Like.belongsTo(Post, {
-        foreignKey: 'post_id',
-        as: 'post',
-        onDelete: 'cascade'
+        foreignKey: "post_id",
+        as: "post",
+        onDelete: "cascade",
     });
 
     Like.belongsTo(Comment, {
-        foreignKey: 'comment_id',
-        as: 'comment',
-        onDelete: 'cascade'
+        foreignKey: "comment_id",
+        as: "comment",
+        onDelete: "cascade",
     });
 
     Like.belongsTo(User, {
-        foreignKey: 'author_id',
-        as: 'author',
-        onDelete: 'cascade'
+        foreignKey: "author_id",
+        as: "author",
+        onDelete: "cascade",
     });
 
     Like.beforeDestroy(async (instance) => {
-        await instance.updateUserRating(instance.type === 'like' ? -1 : 1);
+        await instance.updateUserRating(instance.type === "like" ? -1 : 1);
     });
 
     Like.beforeBulkDestroy(async () => {
-
-            await instance.updateUserRating(instance.type === 'like' ? -1 : 1);
+        await instance.updateUserRating(instance.type === "like" ? -1 : 1);
     });
 
-    return {Like}
-
-}
+    return { Like };
+};
