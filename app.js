@@ -6,6 +6,7 @@ const logger = require("morgan");
 const cors = require("cors");
 
 require("dotenv").config();
+const adminJS = require("./lib/adminJS");
 const db = require("./repositories");
 const usersLib = require("./lib/users");
 const parseError = require("./lib/errorParser");
@@ -143,9 +144,17 @@ async function setup() {
         admin: adminMiddleware,
     });
 
+    const { admin, adminRouter, appSession } = await adminJS.init(sequelize, {
+        User,
+    });
+
     // view engine setup
     app.set("views", path.join(__dirname, "views"));
     app.set("view engine", "ejs");
+
+    app.use(appSession);
+    app.use(admin.options.rootPath, adminRouter);
+    app.admin = admin;
 
     app.use(logger("dev"));
     app.use(express.json());

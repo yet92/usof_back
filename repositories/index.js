@@ -56,6 +56,7 @@ exports.init = async ({
             sequelize,
             User
         );
+        const {Session} = require('./models/Session')(sequelize);
 
         Post.beforeDestroy(async (instance) => {
             const likes = await Like.findAll({
