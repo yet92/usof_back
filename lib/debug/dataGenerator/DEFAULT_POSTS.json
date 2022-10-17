@@ -1,0 +1,60 @@
+[
+    {
+        "title": "Physical Therapy Assistant",
+        "content": "Synergized empowering function",
+        "author_id": 7,
+        "categoryIds": [1, 2]
+    },
+    {
+        "title": "Junior Executive",
+        "content": "Open-architected leading edge concept",
+        "author_id": 2,
+        "categoryIds": [1, 2, 3]
+    },
+    {
+        "title": "Electrical Engineer",
+        "content": "Persevering 6th generation solution",
+        "author_id": 8,
+        "categoryIds": [1]
+    },
+    {
+        "title": "Desktop Support Technician",
+        "content": "Multi-layered hybrid model",
+        "author_id": 1
+    },
+    {
+        "title": "Environmental Specialist",
+        "content": "Optimized fresh-thinking attitude",
+        "author_id": 5,
+        "categoryIds": [4, 5]
+    },
+    {
+        "title": "Senior Sales Associate",
+        "content": "Advanced high-level challenge",
+        "author_id": 3,
+        "categoryIds": [1, 5]
+    },
+    {
+        "title": "Recruiter",
+        "content": "Automated intangible toolset",
+        "author_id": 6,
+        "categoryIds": [2, 4, 3]
+    },
+    {
+        "title": "Dental Hygienist",
+        "content": "Implemented executive definition",
+        "author_id": 5,
+        "categoryIds": [2, 3]
+    },
+    {
+        "title": "Clinical Specialist",
+        "content": "Cloned human-resource product",
+        "author_id": 8,
+        "categoryIds": [1, 5]
+    },
+    {
+        "title": "Staff Accountant IV",
+        "content": "Polarised human-resource ability",
+        "author_id": 4
+    }
+]

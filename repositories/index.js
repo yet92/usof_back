@@ -21,6 +21,7 @@ exports.init = async ({
             host,
             port,
             dialect: "mysql",
+            logging: false
         });
         await sequelize.authenticate();
 
@@ -56,7 +57,7 @@ exports.init = async ({
             sequelize,
             User
         );
-        const {Session} = require('./models/Session')(sequelize);
+        const { Session } = require("./models/Session")(sequelize);
 
         Post.beforeDestroy(async (instance) => {
             const likes = await Like.findAll({

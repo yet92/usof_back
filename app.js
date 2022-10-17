@@ -47,7 +47,7 @@ const {
     NotEnoughRights,
     MustBeUnique,
 } = require("./lib/helpers/errors");
-const { logAsJSON } = require("./lib/debug");
+const { generateData } = require("./lib/debug");
 
 async function setup() {
     const app = express();
@@ -70,6 +70,23 @@ async function setup() {
         database: process.env.DB_DATABASE,
     });
 
+    const { createUser } = usersLib.init({ User });
+
+    await createDefaultAdminUser({ createUser, email: process.env.ADMIN_EMAIL, login: process.env.ADMIN_LOGIN, password: process.env.ADMIN_PASSWORD });
+
+    if (Number(process.env.GENERATE_DATA) === 1) {
+        if ((await Post.findAll({limit: 1})).length) {
+            console.error('Remove all data from database to generate new');
+        } else {
+            generateData(createUser, {
+                Post,
+                Like,
+                Comment,
+                Category
+            })
+        }
+    }
+
     const { admin: adminMiddleware } = useAdmin({ User });
     const { avatarData: avatarDataMiddleware } = useAvatarData({
         User,
@@ -90,10 +107,8 @@ async function setup() {
         User,
         AuthToken,
     });
-    const { createUser } = usersLib.init({ User });
-
-    await createDefaultAdminUser({ createUser });
-    await createDefaultUser({ createUser });
+    
+    // await createDefaultUser({ createUser });
     // await createDefaultCategories(Category);
 
     const { router: authAPIRouter } = useAuth({
