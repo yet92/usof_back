@@ -7,7 +7,17 @@ const { Model, DataTypes } = require("sequelize");
  * @param {typeof Model} Post
  */
 module.exports = (sequelize, User, Post) => {
-    class Comment extends Model {}
+    class Comment extends Model {
+        async toggleStatus() {
+            if (this.status === "inactive") {
+                this.status = "active";
+            } else {
+                this.status = "inactive";
+            }
+
+            await this.save();
+        }
+    }
 
     Comment.init(
         {

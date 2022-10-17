@@ -200,6 +200,32 @@ class CommentsAPI {
                 }
             }
         );
+
+        this.router.get(
+            "/:id/toggleVisibility",
+            user,
+            checkAuthValidity,
+            admin,
+            async (req, res, next) => {
+                const id = req.params.id;
+                const userRole = req.user?.isAdmin ? "admin" : "user";
+
+                try {
+                    const newStatus =
+                        await this.commentsService.toggleCommentVisibility(
+                            id,
+                            userRole,
+                            req.user?.id
+                        );
+
+                    res.json({
+                        message: `Comment with id: ${id} now is ${newStatus}`,
+                    });
+                } catch (err) {
+                    next(err);
+                }
+            }
+        );
     }
 }
 
