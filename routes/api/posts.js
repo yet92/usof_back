@@ -3,7 +3,7 @@ const { Router } = require("express");
 class PostsAPI {
     /**
      *
-     * @param {import('lib/services/PostsService')} postsService
+     * @param {import("../../lib/services/PostsService")} postsService
      * @param user
      * @param checkAuthValidity
      * @param admin
@@ -68,6 +68,54 @@ class PostsAPI {
                 }
             }
         );
+
+        this.router.get(
+            '/my',
+            user,
+            checkAuthValidity,
+            async (req, res, next) => {
+
+                try {
+                    const page = req.query.page - 1 || 0;
+                    const sort = req.query.sort || "likes";
+                    const userRole = req.user?.isAdmin ? "admin" : "user";
+
+                    let categoryIds = req.query.categories;
+                    if (categoryIds && typeof categoryIds === "string") {
+                        categoryIds = [categoryIds];
+                    }
+
+                    let dateInterval = { from: null, to: null };
+                    if (req.query.from) {
+                        dateInterval = {
+                            from: new Date(req.query.from),
+                            to: new Date(req.query.to),
+                        };
+                    }
+
+                    const status = req.query.status;
+
+                    const posts = await this.postsService.getPostsOf(
+                        page,
+                        req.user?.id,
+                        {
+                            sortBy: sort,
+                            filters: {
+                                categoryIds,
+                                withStatus: status,
+                                dateInterval,
+                            },
+                        }
+                    );
+
+                    res.json({
+                        posts,
+                    });
+                } catch (err) {
+                    next(err);
+                }
+
+            })
 
         this.router.get(
             "/:id",
