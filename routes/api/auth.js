@@ -156,7 +156,12 @@ function useAuth({
 
                 res.status(200).json({
                     message: "Success login",
-                    token,
+                    user: {
+                        token,
+                        id: user.id,
+                        login,
+                        fullName: user.fullName
+                    }
                 });
             } catch (err) {
                 next(err);
