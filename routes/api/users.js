@@ -76,7 +76,7 @@ function useUsers({
 
     router.get(
         "/:id",
-        [userMiddleware, adminMiddleware, onlyAdminsMiddleware],
+        [userMiddleware, checkAuthTokenValidityMiddleware, adminMiddleware],
         async function (req, res, next) {
             try {
                 const { id } = req.params;

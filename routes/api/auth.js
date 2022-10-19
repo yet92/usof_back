@@ -157,10 +157,11 @@ function useAuth({
                 res.status(200).json({
                     message: "Success login",
                     user: {
+                        role: user.role,
                         token,
                         id: user.id,
                         login,
-                        fullName: user.fullName
+                        fullName: user.fullName,
                     }
                 });
             } catch (err) {
