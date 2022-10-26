@@ -64,6 +64,7 @@ class PostsAPI {
                         posts,
                     });
                 } catch (err) {
+                    console.log(err);
                     next(err);
                 }
             }
@@ -375,14 +376,15 @@ class PostsAPI {
         const sort = req.query.sort || "likes";
         const userRole = req.user?.isAdmin ? "admin" : "user";
 
-        const {rows: posts, count} = await this.postsService.getAll(
-            Number(page),
-            sort,
-            userRole,
-            req.user?.id
-        );
-
         try {
+
+            const {rows: posts, count} = await this.postsService.getAll(
+                Number(page),
+                sort,
+                userRole,
+                req.user?.id
+            );
+
             res.json({
                 posts,
                 count

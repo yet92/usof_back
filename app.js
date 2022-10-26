@@ -216,16 +216,23 @@ async function setup() {
             });
         }
 
+        if (err.status === 404) {
+            return res.status(404).json({
+                message: 'Not found'
+            })
+        }
+
         // set locals, only providing error in development
         res.locals.message =
             process.env.ENV === "DEVELOPMENT"
                 ? err.message
                 : "Something went wrong";
         res.locals.error = process.env.ENV === "DEVELOPMENT" ? err : {};
-
+        
         // render the error page
-        res.status(err.status || 500);
-        res.render("error");
+        res.status(err.status || 500).json({
+            message: res.locals.message
+        });
     });
 
     return app;

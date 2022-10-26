@@ -51,7 +51,7 @@ class CommentsAPI {
                         req.user?.id
                     );
 
-                    res.status(201).json({
+                    res.json({
                         likes,
                     });
                 } catch (err) {
