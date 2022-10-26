@@ -147,7 +147,7 @@ function useUsers({
             } else {
                 const user = await User.findByPk(req.user.id);
 
-                user.profilePicture = req.avatarFileName;
+                user.profilePicture = req.file.filename;
 
                 await user.save();
 

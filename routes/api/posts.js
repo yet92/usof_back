@@ -64,7 +64,6 @@ class PostsAPI {
                         posts,
                     });
                 } catch (err) {
-                    console.log(err);
                     next(err);
                 }
             }

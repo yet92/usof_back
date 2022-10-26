@@ -162,6 +162,8 @@ function useAuth({
                         id: user.id,
                         login,
                         fullName: user.fullName,
+                        rating: user.rating,
+                        profilePicture: user.profilePicture
                     }
                 });
             } catch (err) {
