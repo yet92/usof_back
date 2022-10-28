@@ -179,7 +179,7 @@ function useUsers({
 
                 let user = null;
 
-                if (req.user.id === req.params.id) {
+                if (Number(req.user.id) === Number(req.params.id)) {
                     user = await User.findByPk(req.user.id);
 
                     await user.update(newUserData);
